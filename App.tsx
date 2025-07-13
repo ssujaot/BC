@@ -1,11 +1,5 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
+import React, { useEffect } from 'react';
+import OTPublishersNativeSDK from 'react-native-onetrust-cmp';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -57,6 +51,29 @@ function Section({children, title}: SectionProps): React.JSX.Element {
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+
+  useEffect(() => {
+    OTPublishersNativeSDK.startSDK(
+      'cdn.cookielaw.org',
+      '0197f457-beda-70c9-9185-ed9882c33deb-test',
+      'en',
+      {
+        countryCode: '',
+        enableDarkMode: 'false',
+      },
+      true,
+    )
+    .then((responseObject: any) => {
+      console.info(`Download status is ${responseObject.status}`);
+      OTPublishersNativeSDK.shouldShowBanner().then((result) =>
+  console.log('Should the banner be shown? ', result),
+);
+    })
+      .catch((error) => {
+        console.error(`OneTrust download failed with error ${error}`);
+      });
+  }, []); // <-- correct useEffect dependency array
+  
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
