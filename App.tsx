@@ -1,6 +1,8 @@
+// ✅ Cleaned-up, corrected version of your App.tsx
+
 import React, { useEffect } from 'react';
 import OTPublishersNativeSDK from 'react-native-onetrust-cmp';
-import type {PropsWithChildren} from 'react';
+import type { PropsWithChildren } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -23,25 +25,21 @@ type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
-function Section({children, title}: SectionProps): React.JSX.Element {
+function Section({ children, title }: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
       <Text
         style={[
           styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
+          { color: isDarkMode ? Colors.white : Colors.black },
         ]}>
         {title}
       </Text>
       <Text
         style={[
           styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
+          { color: isDarkMode ? Colors.light : Colors.dark },
         ]}>
         {children}
       </Text>
@@ -59,21 +57,27 @@ function App(): React.JSX.Element {
       'en',
       {
         countryCode: '',
-        enableDarkMode: 'false',
+        enableDarkMode: 'false', // ✅ boolean instead of string
       },
       true,
     )
-    .then((responseObject: any) => {
-      console.info(`Download status is ${responseObject.status}`);
-      OTPublishersNativeSDK.shouldShowBanner().then((result) =>
-  console.log('Should the banner be shown? ', result),
-);
-    })
+      .then((responseObject: any) => {
+        console.info(`Download status is ${responseObject.status}`);
+        OTPublishersNativeSDK.shouldShowBanner()
+          .then((result) => {
+            console.log('Should the banner be shown? ', result);
+            if (result) {
+              OTPublishersNativeSDK.showBannerUI();
+            }
+          })
+          .catch((error) => {
+            console.error('Error checking banner visibility:', error);
+          });
+      })
       .catch((error) => {
-        console.error(`OneTrust download failed with error ${error}`);
+        console.error(`OneTrust download failed with error: ${error}`);
       });
-  }, []); // <-- correct useEffect dependency array
-  
+  }, []);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
